@@ -32,14 +32,14 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         // 1. Ground Check
-        isGrounded = Physics.Raycast(transform.position + transform.upgroundDistance/2, -transform.up, groundDistance, groundMask);
+        isGrounded = Physics.Raycast(transform.position + transform.up * groundDistance/2, -transform.up, groundDistance, groundMask);
 
         // 2. Read Inputs
         turnInput = Input.GetAxisRaw("Horizontal"); // A/D or Left/Right turn input
         float moveZ = Input.GetAxisRaw("Vertical");  // W/S or Up/Down forward/backward
 
         // Rotate the player transform in Update for responsive turning visuals
-        transform.Rotate(0f, turnInput turnSpeed * Time.deltaTime, 0f);
+        transform.Rotate(0f, turnInput * turnSpeed * Time.deltaTime, 0f);
 
         // Calculate forward movement relative to current facing direction
         moveDirection = transform.forward * moveZ;
@@ -49,5 +49,29 @@ public class PlayerMovement : MonoBehaviour
         {
             jumpRequested = true;
         }
+    }
+    private void FixedUpdate()
+    {
+        MovePlayer();
+
+        if (jumpRequested)
+        {
+            Jump();
+            jumpRequested = false;
+        }
+    }
+    private void MovePlayer()
+    {
+        // Calculate velocity based on current forward vector
+        Vector3 targetVelocity = moveDirection * moveSpeed;
+
+        // Apply movement while preserving vertical velocity (gravity/jumping)
+        rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
+    }
+
+    private void Jump()
+    {
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
     }
 }
