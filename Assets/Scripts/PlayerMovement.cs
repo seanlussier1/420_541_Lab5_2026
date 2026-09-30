@@ -19,6 +19,9 @@ public class PlayerMovement : MonoBehaviour
     private float turnInput;            // horizontal input for rotation
     private bool isGrounded;            // true when standing on the ground
     private bool jumpRequested = false; // set in Update(), used later
+
+    public bool IsGrounded => isGrounded; 
+
     // The methods from the next steps go here, inside the class
     // Start runs once, just before the first frame
     private void Start()
